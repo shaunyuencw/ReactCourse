@@ -1,5 +1,3 @@
-
-
 const PersonsForm = ({ addContact, newName, handleNameChange, newNumber, handleNumberChange }) => {
     return (
         <form onSubmit={addContact}>
