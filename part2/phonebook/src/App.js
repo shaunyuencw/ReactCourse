@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Filter, Persons, PersonsForm } from './components'
+import { Filter, Persons, PersonsForm, Notification } from './components'
 
 import contactService from './services/contacts'
 
@@ -9,6 +9,8 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setFilter] = useState('')
   const [contactToShow, setContactToShow] = useState([])
+  const [message, setMessage] = useState(null)
+  const [type, setType] = useState('')
 
   // Get all Contacts from the server when the app starts
   useEffect(() => {
@@ -22,7 +24,6 @@ const App = () => {
   // Adding new contact
   const addContact = (event) => {
     event.preventDefault()
-
     // Prevent Duplicate Names
     if (persons.some(person => person.name === newName)) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
@@ -36,6 +37,9 @@ const App = () => {
               .then(response => {
                 setPersons(response.data)
               })
+
+            setMessage(`Updated ${newName}`)
+            setType('success')
           })
           .catch(error => {
             alert(
@@ -59,6 +63,8 @@ const App = () => {
         setPersons(persons.concat(response.data))
         setNewName('')
         setNewNumber('')
+        setMessage(`Added ${newName}`)
+        setType('success')
       })
   }
 
@@ -70,12 +76,13 @@ const App = () => {
         .deleteContact(id)
         .then(response => {
           setPersons(persons.filter(n => n.id !== id))
+          setMessage(`Information of ${person.name} deleted successfully`)
+          setType('success')
         })
         .catch(error => {
-          alert(
-            `the contact for '${person.name}' has  already been deleted from server`
-          )
           setPersons(persons.filter(n => n.id !== id))
+          setMessage(`Information of ${person.name} has already been removed from server`)
+          setType('error')
         })
     }
   }
@@ -105,6 +112,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} type={type} />
       <Filter newFilter={newFilter} handleFilterChange={handleFilterChange} />
       <h3>Add a new Contact</h3>
       <PersonsForm addContact={addContact} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange} />
