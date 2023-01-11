@@ -1,8 +1,13 @@
 const express = require('express')
 const morgan = require('morgan')
-const app = express()
+const cors = require('cors')
+const dotenv = require('dotenv')
 
+dotenv.config()
+const app = express()
 app.use(express.json())
+app.use(cors())
+app.use(express.static('build'))
 
 let persons = [
     {
@@ -46,11 +51,6 @@ app.use(morgan(function (tokens, req, res) {
     ].join(' ')
 }))
 
-
-// Testing
-app.get('/', (request, response) => {
-    response.send('<h1>PhoneBook</h1>')
-})
 
 // Info
 app.get('/info', (request, response) => {
@@ -114,12 +114,7 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end()
 })
 
-const PORT = 3001
-app.listen(PORT)
-console.log(`Server running on port ${PORT}`)
-
-// Error handling
-const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' })
-}
-app.use(unknownEndpoint)
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+})
