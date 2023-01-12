@@ -32,11 +32,7 @@ const App = () => {
         contactService
           .update(person.id, changedPerson)
           .then(() => {
-            contactService
-              .getAll()
-              .then(response => {
-                setPersons(response.data)
-              })
+            setPersons(persons.map(n => n.id !== person.id ? n : changedPerson))
 
             setMessage(`Updated ${newName}`)
             setType('success')
@@ -45,7 +41,7 @@ const App = () => {
             alert(
               `the contact for '${person.name}' was already deleted from server`
             )
-            setPersons(persons.filter(n => n.name !== newName))
+            // setPersons(persons.filter(n => n.name !== newName))
           })
       }
       return
@@ -54,7 +50,6 @@ const App = () => {
     const contactObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1,
     }
 
     contactService
@@ -99,7 +94,7 @@ const App = () => {
     setFilter(event.target.value)
   }
 
-  const updateContactsToShow = () => {
+  const updateContactToShow = () => {
     if (newFilter === '') {
       setContactToShow(persons)
     }
@@ -107,7 +102,7 @@ const App = () => {
       setContactToShow(persons.filter(person => person.name.toLowerCase().includes(newFilter.toLowerCase())))
     }
   }
-  useEffect(() => updateContactsToShow(), [newFilter, persons])
+  useEffect(() => updateContactToShow(), [newFilter, persons])
 
   return (
     <div>

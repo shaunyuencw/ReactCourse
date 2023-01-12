@@ -2,41 +2,14 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const dotenv = require('dotenv')
+const mongoose = require('mongoose')
+const Person = require('./models/person')
 
 dotenv.config()
 const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(express.static('build'))
-
-let persons = [
-    {
-        "id": 1,
-        "name": "Arto Hellas",
-        "number": "040-123456"
-    },
-    {
-        "id": 2,
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523"
-    },
-    {
-        "id": 3,
-        "name": "Dan Abramov",
-        "number": "12-43-234345"
-    },
-    {
-        "id": 4,
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122"
-    }
-]
-
-// Generate random id
-const generateId = () => {
-    return Math.floor(Math.random() * 1000000000)
-}
-
 
 // Configure Morgan middleware
 morgan.token('body', (req, res) => JSON.stringify(req.body))
@@ -54,15 +27,14 @@ app.use(morgan(function (tokens, req, res) {
 
 // Info
 app.get('/info', (request, response) => {
-    const numContact = persons.length
-    response.send('<p>Phonebook has info for ' + numContact + ' people</p>' + '<p>' + new Date() + '</p>')
-
+    Person.find({}).then(persons => {
+        response.send('<p>Phonebook has info for ' + persons.length + ' people</p>' + '<p>' + new Date() + '</p>')
+    })
 })
 
 // Create a contact
 app.post('/api/persons', (request, response) => {
     const body = request.body
-
     // Check if required fields are present
     if (!body.name || !body.number) {
         return response.status(400).json({
@@ -70,48 +42,67 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    // Check if duplicate name exist
-    if (persons.find(person => person.name === body.name)) {
-        return response.status(400).json({
-            error: 'Name must be unique'
-        })
-    }
+    // Check if name already exists
+    Person.find({ name: body.name }).then(persons => {
+        if (persons.length > 0) {
+            response.status(400).json({
+                error: 'Name already exists'
+            })
+            return
+        }
 
-    // Construct new person
-    const person = {
-        name: body.name,
-        number: body.number,
-        id: generateId(),
-    }
+        else {
+            // Construct new person
+            const person = new Person({
+                name: body.name,
+                number: body.number,
+            })
 
-    persons = persons.concat(person)
-    response.json(person)
+            person.save().then(savedPerson => {
+                response.json(savedPerson)
+            })
+        }
+    })
 })
 
 // Read
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(persons => {
+        response.json(persons)
+    })
 })
 
 // Read a single contact
 app.get('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-
-    if (person) {
-        response.json(person)
-    }
-    else {
-        response.status(404).end()
-    }
+    Person.find({ id: id }).then(persons => {
+        response.json(persons)
+    })
 })
 
 // Delete 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
+    const id = mongoose.Types.ObjectId(request.params.id)
+    Person.deleteOne({ _id: id }).then(result => {
+        if (result.deletedCount === 0) {
+            return response.status(404).json({
+                error: 'Contact not found'
+            })
+        }
 
-    response.status(204).end()
+        response.status(204).end()
+    })
+})
+
+app.put('/api/persons/:id', (request, response) => {
+    const id = mongoose.Types.ObjectId(request.params.id)
+    const body = request.body
+
+    Person.updateOne({ _id: id }, { number: body.number }).then(res => {
+        if (res.modifiedCount > 0){
+            response.json(body)
+        }
+    })
 })
 
 const PORT = process.env.PORT || 3001

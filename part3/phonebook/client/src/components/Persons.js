@@ -1,5 +1,5 @@
 const Persons = ({ persons, deleteContact }) => {
-    if (persons.length > 0){
+    if (persons && persons.length > 0){
         return (
             <ul>
                 {persons.map(person => 

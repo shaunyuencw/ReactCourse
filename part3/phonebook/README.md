@@ -47,3 +47,9 @@ app.listen(PORT, () => {
   },
 "proxy": "http://localhost:3001"
 ```
+
+## Connecting to MongoDB
+```Bash
+npm install mongoose
+
+```
