@@ -33,7 +33,7 @@ app.get('/info', (request, response) => {
 })
 
 // Create a contact
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
     // Check if required fields are present
     if (!body.name || !body.number) {
@@ -42,27 +42,25 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    // Check if name already exists
-    Person.find({ name: body.name }).then(persons => {
-        if (persons.length > 0) {
-            response.status(400).json({
-                error: 'Name already exists'
-            })
-            return
-        }
 
-        else {
-            // Construct new person
-            const person = new Person({
-                name: body.name,
-                number: body.number,
-            })
-
-            person.save().then(savedPerson => {
-                response.json(savedPerson)
-            })
-        }
+    // Construct new person
+    const person = new Person({
+        name: body.name,
+        number: body.number,
     })
+
+    person
+        .save()
+        .then(savedPerson => {
+            response.json(savedPerson)
+        }).catch(error => {
+            console.log(error)
+            if (error.name === 'ValidationError') {
+                console.log(error.message)
+                return response.status(400).json({ error: error.message })
+            }
+            next(error)
+        })
 })
 
 // Read
@@ -94,15 +92,30 @@ app.delete('/api/persons/:id', (request, response) => {
     })
 })
 
-app.put('/api/persons/:id', (request, response) => {
-    const id = mongoose.Types.ObjectId(request.params.id)
+app.put('/api/persons/:id', (request, response, next) => {
     const body = request.body
 
-    Person.updateOne({ _id: id }, { number: body.number }).then(res => {
-        if (res.modifiedCount > 0){
-            response.json(body)
-        }
-    })
+    Person
+        .findByIdAndUpdate(
+            request.params.id,
+            { number: body.number },
+            { new: true, runValidators: true, context: 'query' }
+        )
+        .then(res => {
+            if (res.modifiedCount > 0) {
+                response.json(body)
+            }
+        })
+        .catch(error => {
+            if (error.name === 'CastError') {
+                console.log('CastError: ', error.message)
+                return response.status(400).send({ error: 'malformatted id' })
+            } else if (error.name === 'ValidationError') {
+                console.log(error.message)
+                return response.status(400).json({ error: error.message })
+            }
+            next(error)
+        })
 })
 
 const PORT = process.env.PORT || 3001

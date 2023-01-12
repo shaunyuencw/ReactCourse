@@ -1,6 +1,6 @@
-# fly.toml file generated for keru-phonebook-app on 2023-01-11T08:12:00+08:00
+# fly.toml file generated for keru-playground on 2023-01-12T10:28:39+08:00
 
-app = "keru-phonebook-app"
+app = "keru-playground"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []

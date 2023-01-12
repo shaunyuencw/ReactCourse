@@ -17,8 +17,20 @@ mongoose.connect(url)
     })
 
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minLength: 3,
+        required: true,
+    },
+    number: {
+        type: String,
+        validate: function(v) {
+            return /^\d{2,3}-\d+$/.test(v);
+        },
+        message: "Invalid format for {PATH}. Expected format: 2-3 digits followed by a dash, then more numbers (ex: '123-456')",
+        minLength: 8,
+        required: true,
+    }
 }, { collection: "persons" })
 
 personSchema.set('toJSON', {

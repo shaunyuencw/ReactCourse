@@ -38,10 +38,8 @@ const App = () => {
             setType('success')
           })
           .catch(error => {
-            alert(
-              `the contact for '${person.name}' was already deleted from server`
-            )
-            // setPersons(persons.filter(n => n.name !== newName))
+            setMessage(error.response.data.error)
+            setType('error')
           })
       }
       return
@@ -61,6 +59,10 @@ const App = () => {
         setMessage(`Added ${newName}`)
         setType('success')
       })
+      .catch(error => {
+        setMessage(error.response.data.error)
+        setType('error')
+      })
   }
 
   // Deleting a contact
@@ -76,7 +78,7 @@ const App = () => {
         })
         .catch(error => {
           setPersons(persons.filter(n => n.id !== id))
-          setMessage(`Information of ${person.name} has already been removed from server`)
+          setMessage(error.response.data.error)
           setType('error')
         })
     }
