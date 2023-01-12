@@ -26,7 +26,7 @@ const Leaderboard = ({ anecdotes }) => {
 }
 const App = () => {
   const [anecdotes, setVote] = useState([
-    {quote: 'If it hurts, do it more often.', votes: 0},
+    {quote: 'If it hurts, do it more often. wtf', votes: 0},
     {quote: 'Adding manpower to a late software project makes it later!', votes: 0}, 
     {quote:'The first 90 percent of the code accounts for the first 10 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.', votes: 0},
     {quote:'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.', votes: 0},

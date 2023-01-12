@@ -77,7 +77,7 @@ const App = () => {
         .then(response => {
           setPersons(persons.filter(n => n.id !== id))
           setMessage(`Information of ${person.name} deleted successfully`)
-          setType('success')
+          setType('unsuccessful')
         })
         .catch(error => {
           setPersons(persons.filter(n => n.id !== id))
