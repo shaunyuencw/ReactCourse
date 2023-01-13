@@ -155,7 +155,7 @@ const App = () => {
 ```
 
 ## **Part 1d Complex States, Debugging React Apps**
-*State "Objects"
+*State "Objects"*
 ```JavaScript
 // Instead of 
 const [left, setLeft] = useState(0)
@@ -214,7 +214,7 @@ let max = Math.max(...numbers)
 console.log(max) // 3
 ```
 
-5. To modify an const obj1
+5. To modify some constant object
 ``` JavaScript
 const person = { name: "John Doe", age: 30 }
 const updatedPerson = { ...person, age: 35 }
