@@ -10,9 +10,9 @@ myArr.map((item, indexd) => ...)
 Example: You have 4 Custom components in you Components Folder
 ```
 │
-└── ReactApp
+└── ReactApp ...
 │  │
-│  └─── src
+│  └─── components
 │      │  
 │      └───  Filter.js
 │          | Notification.js
