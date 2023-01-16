@@ -103,7 +103,89 @@ axios
 ```
 
 ## **Part 2d Altering data in Server**
-TBC
+*Adding data to server*
+```JavaScript
+const addItem = event => {
+    event.preventDefault()
+    const itemObject = {
+        content: newItem,
+        date: new Date().toISOString(),
+    }
+
+  axios
+    .post('http://localhost:3001/someDB', itemObject)
+    .then(response => {
+        setArray(someArr.concat(response.data))
+        resetForm()
+    })
+}
+```
+
+*Updating Data*
+```JavaScript
+const toggleImportanceOf = id => {
+    const url = `http://localhost:3001/someDB/${id}`
+    const item = someArr.find(n => n.id === id)
+    const changedItem = { ...someArr, someBool: !someArr.someBool }
+
+    axios.put(url, changedItem).then(response => {
+        setArray(someArr.map(someArr => someItem.id !== id ? someArr : response.data))
+    })
+}
+```
+
+*Deleteing Data*
+```JavaScript
+// Deleting a contact
+const deleteItem = (id) => {
+const url = `http://localhost:3001/someDB/${id}`
+const itemToDelete = someArr.find(n => n.id === id)
+
+axios
+.delete(url, itemToDelete).then(response => {
+    setArray(someArr.filter(n => n.id !== id))
+})
+}
+```
 
 ## **Part 2e Adding Styles to React App**
-TBC
+*Importing in css*
+```JavaScript
+import './index.css'
+```
+
+*Setting CSS Rules*
+1. To an entire tag.
+```css
+h1 {
+    color: blue;
+}
+```
+
+2. Using a className
+``` HTML
+<div className="someClass">This text will be orange</div>
+```
+
+```css
+.someClass {
+    color: orange;
+}
+```
+
+3. Inline Styling
+```JavaScript
+const component = () => {
+    const cStyle = {
+        color: 'green',
+        fontStyle: 'italic',
+        fontSize: 16
+    }
+
+    return (
+        <div style={footerStyle}>
+            <em>Some Text</em>
+        </div>
+    )
+}
+````
