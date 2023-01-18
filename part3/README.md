@@ -121,7 +121,71 @@ There are many ways to test, some popular ones include Postman. But I personally
 [Thunder Client](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)
 
 ## **Part 3b Deploying app to Internet**
-TBC
+*Same origin policy (Middleware)* <br>
+The **Same Origin Policy** is a security measure that restricts a web page from making requests to a different domain than the one it came from. This is to prevent a malicious website from accessing sensitive information from other sites on the user's behalf. It applies to all types of web requests.<br>
+<br>
+To resovle this, we use CORS (Cross-Origin Resource Sharing), it is a mechanism that allows a web page to make requests to a different domain than the one it came from, while still enforcing the same-origin policy. It does this by adding additional HTTP headers to the request and response that indicate that the request is allowed to be made from a different domain. <br>
+The server can then decide whether or not to allow the request based on the headers received.
+
+```Bash
+npm install cors
+```
+
+```JavaScript
+const cors = require('cors')
+
+app.use(cors())
+```
+
+*Deploying the application to the Internet* <br>
+For both Fly.io and Heroku, we need to change the definition of the port our application uses at the bottom of the index.js file like so:
+```JavaScript
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+})
+```
+A **.env** file must be created with the PORT is should use. *Make sure you have the dotenv package
+
+*Fly.io Setup guide*
+[Installing FlyCtl](https://fly.io/docs/hands-on/install-flyctl/)
+```Bash
+flyctl auth login
+```
+
+*Deploying for the first time **(Windows)***
+```Bash
+cd client
+npm run build
+XCopy /S /E /I /Y "build/" "../server/build"
+cd ../server
+flyctl launch
+```
+
+*Pushing updates*
+```Bash
+cd client
+npm run deploy:full
+```
+
+*Streamlining deploying of the frontend*
+```json
+{
+    "scripts": {
+        "build:ui": "del build /q && npm run build && XCopy /S /E /I /Y \"build\" \"../server/build/\"",
+        "start": "react-scripts start",
+        "deploy": "cd ../server && flyctl deploy",
+        "logs:prod": "flyctl logs",
+        "build": "react-scripts build",
+        "deploy:full": "npm run build:ui && npm run deploy"
+    },
+    "resolutions": {
+        "mini-css-extract-plugin": "2.4.5"
+    },
+    "proxy": "http://localhost:3001"
+}
+```
+
 
 ## **Part 3c Saving data to MongoDB**
 TBC
